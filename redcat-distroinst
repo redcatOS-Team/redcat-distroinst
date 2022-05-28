@@ -6,160 +6,58 @@ if ! command -v dialog > /dev/null; then
   sudo apt-get install dialog -y
 fi
 
+if ! command -v brl > /dev/null; then
+  echo "bedrock linux is not installed, installing..." >&2
+  sudo mkdir /etc/brl && sudo wget https://github.com/bedrocklinux/bedrocklinux-userland/releases/download/0.7.27/bedrock-linux-0.7.27-x86_64.sh -P /etc/brl && sudo sh /etc/brl/bedrock-linux-0.7.27-x86_64.sh --hijack 
+fi
+
 SELECTED=($( dialog --backtitle "Press 'space' to toggle an option, use arrow keys to go up/down, press enter to continue" --erase-on-exit --scrollbar --separate-output --checklist "Select Desktop Environment(s)" 10 35 5 \
-  "1" "GNOME (Ubuntu)" OFF \
-  "2" "GNOME" OFF \
-  "3" "KDE (Full)" OFF \
-  "4" "KDE (Standard)" OFF \
-  "5" "XFCE" OFF \
-  "6" "MATE" OFF \
-  "7" "MATE (Ubuntu)" OFF \
-  "8" "Cinnamon" OFF \
-  "9" "LXQT" OFF \
-  "10" "Budgie" OFF \
-  "11" "i3" OFF \
-  "12" "Unity (Ubuntu)" OFF \
-  "13" "Sway" OFF \
-  "14" "AwesomeWM" OFF \
-  "15" "bspwm" OFF \
-  "16" "DWM" OFF \
-  "17" "Openbox" OFF \
-  "18" "UKUI" OFF \
-  "19" "Phosh core" OFF \
-  "20" "LXDE (Ubuntu)" OFF \
-  "21" "LXDE" OFF \
-  "22" "XFCE (Ubuntu)" OFF \
-  "23" "Enlightenment" OFF \
-  "24" "GNOME Flashback" OFF \
+  "1" "Arch" OFF \
+  "2" "Fedora" OFF \
+  "3" "Gentoo" OFF \
+  "4" "Alpine" OFF \
+  "5" "Artix" OFF \
+  "6" "redcatOS" OFF \
   3>&1 1>&2 2>&3))
 
 for i in "${SELECTED[@]}"; do
   case $i in
     1)
-      desktop+=("ubuntu-desktop")
-      login_manager="gdm3"
+      distro+=("arch")
+      packagemanager="pacman -Syu"
+      extras="neofetch"
       ;;
     2)
-      desktop+=("vanilla-gnome-desktop")
-      login_manager="gdm3"
+      distro+=("fedora")
+      packagemanager="dnf install"
+      extras="neofetch"
       ;;
     3)
-      desktop+=("kde-full")
-      login_manager="sddm"
+      distro+=("gentoo")
+      packagemanager="emerge --ask --oneshot"
+      extras="app-misc/neofetch"
       ;;
-    4)
-      desktop+=("kde-standard")
-      login_manager="sddm"
+     4)
+      distro+=("alpine")
+      packagemanager="dnf install"
+      extras="--repository https://dl-cdn.alpinelinux.org/alpine/3.16/community neofetch"
       ;;
-    5)
-      desktop+=("xfce4" "xfce4-goodies")
-      login_manager="lightdm"
+     5)
+      distro+=("artix")
+      packagemanager="pacman -Syu"
+      extras="neofetch"
       ;;
-    6)
-      desktop+=("mate-desktop")
-      login_manager="lightdm"
-      ;;
-    7)
-      desktop+=("ubuntu-mate-desktop")
-      login_manager="lightdm"
-      ;;
-    8)
-      desktop+=("cinnamon")
-      login_manager="lightdm"
-      ;;
-    9)
-      desktop+=("lxqt")
-      login_manager="sddm"
-      ;;
-    10)
-      desktop+=("budgie-desktop")
-      login_manager="budgie-lightdm-theme-base"
-      ;;
-    11)
-      desktop+=("i3")
-      login_manager="lightdm"
-      ;;
-    12)
-      desktop+=("ubuntu-unity-desktop")
-      login_manager="lightdm"
-      extra_packages="dbus-x11 yaru-theme-unity unity-tweak-tool"
-      ;;
-    13)
-      desktop+=("sway")
-      login_manager="sddm"
-      ;; 
-    14)
-      desktop+=("awesome")
-      login_manager="lightdm"
-      ;;
-    15)
-      desktop+=("bspwm")
-      login_manager="lightdm"
-      ;; 
-    16)
-      desktop+=("dwm")
-      login_manager="lightdm"
-      ;;
-    17)
-      desktop+=("openbox")
-      login_manager="lightdm"
-      extra_packages="obconf"
-      ;;
-    18)
-      desktop+=("ukui-desktop-environment")
-      login_manager="ukui-greeter"
-      ;;
-    19)
-      desktop+=("phosh-core")
-      login_manager="gdm3"
-      ;; 
-    20)
-      desktop+=("lubuntu-desktop")
-      login_manager="lxdm"
-      ;; 
-    21)
-      desktop+=("lxde")
-      login_manager="lxdm"
-      ;;
-    22)
-      desktop+=("xubuntu-desktop")
-      login_manager="lightdm"
-      ;;
-    23)
-      desktop+=("enlightenment")
-      login_manager="lightdm"
-      ;;
-    24)
-      desktop+=("gnome-session-flashback")
-      login_manager="gdm3"
+     6)
+      echo "Coming soon! (This is already available on redcatOS if you have Dev Preview 2+)"
       ;;
   esac
 done
 
 clear
 
-echo "Updating package cache..."
-sudo apt-get update
+echo "Updating bedrock..."
+sudo brl update
 
-echo "Checking for package existence..."
-for i in "${desktop[@]}"; do
-  if [[ $(apt-cache search --names-only "^$i\$") ]]; then
-    echo "$i exists..."
-  else
-    echo "$i does not exist, exiting..." >&2
-    exit 1
-  fi
-done
-
-if [[ $(apt-cache search --names-only "^$login_manager\$") ]]; then
-  echo "$i exists..."
-else
-  echo "$i does not exist, exiting..." >&2
-  exit 1
-fi
-
-echo "Installing desktop and login manager..."
-sudo apt-get install -y ${desktop[@]} "${login_manager}" ${extra_packages}
-echo "Set login manager to $login_manager"
-sudo dpkg-reconfigure "${login_manager}"
+echo "Installing distro..."
+sudo brl fetch ${distro[@]} && sudo ${packagemanager} ${extras}
 echo "Done!"
