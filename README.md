@@ -10,3 +10,5 @@ Run `redcat-distroinst` as `root`. Use the up and down keys to navigate the list
 | Distro     | Bugs                                 | Supported?     |
 |------------|--------------------------------------|----------------|
 | Linux Mint | Won't Launch Distro Installer at all | No, bugged out |
+
+Credits to the Rolling Rhino Remix team
