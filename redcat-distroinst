@@ -6,11 +6,6 @@ if ! command -v dialog > /dev/null; then
   sudo apt-get install dialog -y
 fi
 
-if ! command -v brl > /dev/null; then
-  echo "bedrock linux is not installed, installing..." >&2
-  sudo mkdir /etc/brl && sudo wget https://github.com/bedrocklinux/bedrocklinux-userland/releases/download/0.7.27/bedrock-linux-0.7.27-x86_64.sh -P /etc/brl && sudo sh /etc/brl/bedrock-linux-0.7.27-x86_64.sh --hijack 
-fi
-
 SELECTED=($( dialog --backtitle "Press 'space' to toggle an option, use arrow keys to go up/down, press enter to continue" --erase-on-exit --scrollbar --separate-output --checklist "Select Desktop Environment(s)" 10 35 5 \
   "1" "Arch" OFF \
   "2" "Fedora" OFF \
