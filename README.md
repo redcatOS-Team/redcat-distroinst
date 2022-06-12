@@ -7,8 +7,8 @@ Run `redcat-distroinst` as `root`. Use the up and down keys to navigate the list
 #### Screenshots
 (unavailable at this time)
 
-| Distro     | Bugs                                 | Supported?     |
-|------------|--------------------------------------|----------------|
-| Linux Mint | Won't Launch Distro Installer at all | No, bugged out |
+| Distro     | Bugs                                 | Supported?              |
+|------------|--------------------------------------|-------------------------|
+| Linux Mint | Won't Launch Distro Installer at all | Yes (Bug has been fixed)|
 
 Credits to the Rolling Rhino Remix team
