@@ -1,0 +1,53 @@
+#!/bin/bash
+set -e
+
+if ! command -v dialog > /dev/null; then
+  echo "dialog is not installed, installing..." >&2
+  sudo apt-get install dialog -y
+fi
+
+SELECTED=($( dialog --backtitle "Press 'space' to toggle an option, use arrow keys to go up/down, press enter to continue" --erase-on-exit --scrollbar --separate-output --checklist "Select Desktop Environment(s)" 10 35 5 \
+  "1" "Arch" OFF \
+  "2" "Fedora" OFF \
+  "3" "Gentoo" OFF \
+  "4" "Alpine" OFF \
+  "5" "Debian" OFF \
+  "6" "redcatOS" OFF \
+  3>&1 1>&2 2>&3))
+
+for i in "${SELECTED[@]}"; do
+  case $i in
+    1)
+      distro+=("docker.io/library/archlinux:latest")
+      name="redcat-arch"
+      ;;
+    2)
+      distro+=("quay.io/fedora/fedora:39")
+      name="redcat-fedora"
+      ;;
+    3)
+      distro+=("docker.io/gentoo/stage3:latest")
+      name="redcat-gentoo"
+      ;;
+     4)
+      distro+=("docker.io/library/alpine:latest")
+      name="redcat-alpine"
+      ;;
+     5)
+      distro+=("docker.io/library/debian:testing")
+      name="redcat-debian"
+      ;;
+     6)
+      echo "Coming 2025."
+      ;;
+  esac
+done
+
+clear
+
+echo "Updating distrobox..."
+echo "Not available yet."
+
+echo "Installing distro..."
+distrobox create -i ${distro[@]} -n ${name} && distrobox-enter ${name}
+echo "Done!"
